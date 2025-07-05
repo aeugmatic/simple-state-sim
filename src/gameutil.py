@@ -1,6 +1,9 @@
 import math
 import random as rnd
 import pygame as pyg
+import networkx as nx
+from typing import Optional
+from collections.abc import Callable
 from pygame import Surface, Vector2, Color
 
 def interval_split(supintrv: list[int], subintrv: list[int]) -> list[list[int]]:
@@ -70,3 +73,16 @@ def perp_dist(p1: Vector2, p2: Vector2, p0: Vector2):
     denom = math.hypot(p1.x - p2.x, p1.y - p2.y)
 
     return numer / denom
+
+def replace_nodes(node_list: list, graph: nx.Graph, attr_func: Optional[Callable] = None, attr_name: Optional[str] = None):
+        mapping = {}
+        for i in range( len(node_list) ):
+            mapping[i] = node_list[i]
+        nx.relabel_nodes(graph, mapping, False)
+
+        # Give each edge a single attribute, potentially based on the edge nodes themselves - if attribute function arg is given
+        if attr_func:
+            attr_map = {}
+            for e in graph.edges:
+                attr_map[e] = attr_func(e)
+            nx.set_edge_attributes(graph, attr_map, attr_name)#

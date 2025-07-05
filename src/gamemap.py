@@ -2,10 +2,10 @@ import math
 import pygame as pyg
 import networkx as nx
 import random as rnd
+from gameutil import *
 from pygame import Vector2
 from gameobj import GameObject
 from itertools import combinations
-from gameutil import *
 
 # TODO: degree == 0 doesn't guarantee connections - fix this issue (e.g. consider case where
 # map looks like: []--[]   []---[])
@@ -89,24 +89,23 @@ class GameMap:
         # self._travel_graph = nx.watts_strogatz_graph(len(self.state_objs), 2, edge_chance, self.seed)
         self._travel_graph = nx.watts_strogatz_graph(len(self.state_objs), 2, edge_chance, self.seed)
 
-        # Create mapping to change graph nodes into GameObjects
-        mapping = {}
-        for i in range( len(self.state_objs) ):
-            mapping[i] = self.state_objs[i]
-        print(mapping)
-
-        nx.relabel_nodes(self._travel_graph, mapping, False)
-
-        for n in self._travel_graph.nodes:
-            print(n)
-
-        for e in self._travel_graph.edges:
-            dist = (e[0].pos - e[1].pos).magnitude()
-            nx.set_edge_attributes(self._travel_graph, dist, "distance")
+        replace_nodes(
+            self.state_objs, 
+            self._travel_graph, 
+            lambda e : (e[0].pos - e[1].pos).magnitude(),
+            "distance"
+        )
 
     # As of the current design, these won't be drawn as edges
     def _create_opinion_graph(self) -> None:
         self._opinion_graph = nx.complete_graph( len(self.state_objs) )
+
+        replace_nodes(
+            self.state_objs, 
+            self._travel_graph, 
+            lambda e : rnd.choice(OPINIONS),
+            "opinion"
+        )
 
         # Create mapping to change graph nodes into GameObjects
         mapping = {}

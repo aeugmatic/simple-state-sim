@@ -16,7 +16,7 @@ from gamemap import GameMap
 # Constants and other
 MIN_RES = (640,480)
 FPS = 60
-S_LIM = 4
+S_LIM = 2
 S_SIZE = 50
 EXCL_SF = 2.0
 

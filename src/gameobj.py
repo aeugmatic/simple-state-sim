@@ -2,7 +2,7 @@ from pygame import Vector2, Color, Rect
 from typing import Optional
 
 class GameObject:
-    def __init__(self, pos: Vector2, size: Vector2, velocity: Optional[Vector2] = None, color: Optional[Color] = Color(255,255,255)) -> None:
+    def __init__(self, pos: Vector2, size: Vector2, velocity: Optional[Vector2] = None, color: Color = Color(255,255,255)) -> None:
         self._rect = Rect(0,0,0,0)
 
         self.pos = pos
