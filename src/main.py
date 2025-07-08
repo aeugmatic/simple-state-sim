@@ -9,14 +9,13 @@ import sys
 import pygame as pyg
 import random
 from pygame import Vector2
-from pygame.locals import *
-from gameobj import GameObject
 from gamemap import GameMap
+from pygame.locals import *
 
 # Constants and other
 MIN_RES = (640,480)
 FPS = 60
-S_LIM = 2
+S_LIM = 5
 S_SIZE = 50
 EXCL_SF = 2.0
 
@@ -55,6 +54,8 @@ def main(minres: tuple[int,int], fps: tuple[int,int]):
 
     gmap = GameMap(SEED, 0.6, S_LIM, Vector2(S_SIZE), minres, EXCL_SF)
 
+    gmap.draw(min_screen, db_drwexcl=True, db_drwcent=True, db_drwtopleft=True)
+
     while True:
         handle_events(pyg.event.get(), gmap)
 
@@ -62,7 +63,7 @@ def main(minres: tuple[int,int], fps: tuple[int,int]):
         gmap.draw(min_screen, db_drwexcl=True, db_drwcent=True, db_drwtopleft=True)
 
         pyg.display.update()
-        clk.tick(fps)
+        clk.tick(fps)   
 
 # Main
 main(MIN_RES, FPS)

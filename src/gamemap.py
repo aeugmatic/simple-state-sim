@@ -51,6 +51,7 @@ class GameMap:
         for i in range(no_objs):
             new_pos = rand_pos(res, obj_size)
             new_obj = GameObject(
+                f"state{i}",
                 Vector2(new_pos[0], new_pos[1]),
                 Vector2(obj_size),
                 color=(255,255,255)
@@ -74,7 +75,7 @@ class GameMap:
                         break
                     
                     # Test for minimum distance 
-                    dist = (new_obj.pos - o.pos).magnitude()
+                    dist = (new_obj.get_pos() - o.get_pos()).magnitude()
                     if dist < min_len:
                         new_pos = rand_pos(res, obj_size)
                         new_obj.set_pos(Vector2(new_pos))
@@ -84,18 +85,33 @@ class GameMap:
             
             self.state_objs.append(new_obj)
             excl_list.append(new_obj)
-
+    
     def _create_travel_graph(self, edge_chance: float) -> None:
-        # self._travel_graph = nx.watts_strogatz_graph(len(self.state_objs), 2, edge_chance, self.seed)
         self._travel_graph = nx.watts_strogatz_graph(len(self.state_objs), 2, edge_chance, self.seed)
 
         replace_nodes(
             self.state_objs, 
             self._travel_graph, 
-            lambda e : (e[0].pos - e[1].pos).magnitude(),
+            lambda e : (e[0].get_pos() - e[1].get_pos()).magnitude(),
             "distance"
         )
 
+        # Node splitting
+        overlaps = 0
+        for e in self._travel_graph.edges:
+            others = self.state_objs.copy()
+            others.remove(e[0])
+            others.remove(e[1])
+
+            for o in others:
+                pdist = perp_dist(e[0].get_pos(), e[1].get_pos(), o.get_pos())
+                if pdist != -1 and pdist < 30:
+                    overlaps += 1
+                    print(f"perp dist: {pdist}")
+                    print(f"{o.alias} overlaps with {e[0].alias}---{e[1].alias}")
+
+        print(f"overlaps: {overlaps}")
+    
     # As of the current design, these won't be drawn as edges
     def _create_opinion_graph(self) -> None:
         self._opinion_graph = nx.complete_graph( len(self.state_objs) )
@@ -123,7 +139,7 @@ class GameMap:
         
         # Draw travel links first
         for o1,o2 in self._travel_graph.edges:
-            draw_dline(surf, (128,128,128), o1.pos, o2.pos, 4, 15)
+            draw_dline(surf, (128,128,128), o1.get_pos(), o2.get_pos(), 4, 15)
 
         # Then draw states on top
         for o in self.state_objs:
@@ -133,5 +149,5 @@ class GameMap:
                 pyg.draw.circle(surf, (255,255,255), o.get_rect().topleft, 4)
                 pyg.draw.circle(surf, (0,0,255), o.get_rect().topleft, 3)
             if db_drwcent:
-                pyg.draw.circle(surf, (255,255,255), o.pos, 4)
-                pyg.draw.circle(surf, (255,0,0), o.pos, 3)
+                pyg.draw.circle(surf, (255,255,255), o.get_pos(), 4)
+                pyg.draw.circle(surf, (255,0,0), o.get_pos(), 3)

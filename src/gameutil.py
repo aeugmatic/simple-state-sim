@@ -3,6 +3,7 @@ import random as rnd
 import pygame as pyg
 import networkx as nx
 from typing import Optional
+from gameobj import GameObject
 from collections.abc import Callable
 from pygame import Surface, Vector2, Color
 
@@ -68,13 +69,19 @@ def rand_pos(res: tuple, obj_size: Vector2):
             rnd.randint(obj_size.y // 2, (res[1]-1) - (obj_size.y // 2))
         )
 
-def perp_dist(p1: Vector2, p2: Vector2, p0: Vector2):
-    numer = abs( ((p2.y - p1.y)*p0.x) - ((p2.x - p1.x)*p0.y) + (p2.x*p1.y) - (p2.y*p1.y) )
-    denom = math.hypot(p1.x - p2.x, p1.y - p2.y)
+def perp_dist(a: Vector2, b: Vector2, p: Vector2) -> float:
+    ab = b - a
+    ap = p - a
+    proj_c = ab.dot(ap) / (ab.magnitude()**2)
 
-    return numer / denom
+    # Check that the point is even "within" the line AB
+    if 0 <= proj_c and proj_c <= 1:
+        proj = a + (proj_c * ab)
+        return (p - proj).magnitude()
+    else:
+        return -1
 
-def replace_nodes(node_list: list, graph: nx.Graph, attr_func: Optional[Callable] = None, attr_name: Optional[str] = None):
+def replace_nodes(node_list: list, graph: nx.Graph, attr_func: Optional[Callable] = None, attr_name: Optional[str] = None) -> None:
         mapping = {}
         for i in range( len(node_list) ):
             mapping[i] = node_list[i]
@@ -86,3 +93,10 @@ def replace_nodes(node_list: list, graph: nx.Graph, attr_func: Optional[Callable
             for e in graph.edges:
                 attr_map[e] = attr_func(e)
             nx.set_edge_attributes(graph, attr_map, attr_name)#
+
+def split_link_by_game_obj(graph: nx.Graph, edge: tuple[GameObject, GameObject], node: GameObject) -> None:
+    e1 = (edge[0], node)
+    e2 = (node, edge[1])
+
+    graph.remove_edge(edge)
+    graph.add_edges_from([e1,e2])
