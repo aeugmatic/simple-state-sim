@@ -1,8 +1,6 @@
 # 
 # TODO:
-# - Refactor the map gen code using OOP to make less messy usage of the global variable
 # - Properly figure out reseting the game map, current approach is buggy (test yourself to see the issue, cba writing it here right now)
-# - Implement the guarantee that each state has at least one travel path to another - or rethink the travel path idea
 # 
 
 import sys
@@ -60,7 +58,9 @@ def main(minres: tuple[int,int], fps: tuple[int,int]):
         handle_events(pyg.event.get(), gmap)
 
         min_screen.fill((0,0,0))
-        gmap.draw(min_screen, db_drwexcl=True, db_drwcent=True, db_drwtopleft=True)
+        gmap.draw(min_screen, db_drwexcl=True, db_drwcent=True, db_drwtopleft=True, db_aliastxt=True)
+
+        display = pyg.Surface((1080, 720))
 
         pyg.display.update()
         clk.tick(fps)   

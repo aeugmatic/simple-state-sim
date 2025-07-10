@@ -25,7 +25,12 @@ OPINIONS = [
 MIN_LEN = 100
 LINE_EXCL_SF = 1.4 # TODO: Implement as part of the class
 
+pyg.init()
+
 class GameMap:
+    # Static attributes
+    _db_txt = pyg.font.SysFont("Helvetica", 18)
+
     def __init__(self, seed: int, edge_chance: float, no_objs: int, obj_size: Vector2, res: tuple[int, int], excl_sf: float) -> None:
         # Attributes
         self.state_objs = []
@@ -44,6 +49,11 @@ class GameMap:
         self.state_objs = []
         self._travel_graph = nx.Graph()
         self._opinion_graph = nx.Graph()
+
+    # Next session TODO:
+    # 1.) implement text for easier debugging (because of rect labelling) before implementing edge exclusion
+    # 2.) edge exclusion
+    # 3.) travellers
 
     def _generate_states(self, no_objs: int, obj_size: Vector2, res: tuple[int,int], excl_sf: float, min_len: float):
         excl_list: list[GameObject] = []
@@ -66,6 +76,7 @@ class GameMap:
                     # Test for rect exclusion overlap
                     excl = o.get_rect().scale_by(excl_sf)
                     new_obj_excl = new_obj.get_rect().scale_by(excl_sf)
+                    print(o.size)
 
                     if new_obj_excl.colliderect(excl):
                         new_pos = rand_pos(res, obj_size)
@@ -108,7 +119,7 @@ class GameMap:
                 if pdist != -1 and pdist < 30:
                     overlaps += 1
                     print(f"perp dist: {pdist}")
-                    print(f"{o.alias} overlaps with {e[0].alias}---{e[1].alias}")
+                    print(f"{o.alias} overlaps  with {e[0].alias}---{e[1].alias}")
 
         print(f"overlaps: {overlaps}")
     
@@ -132,7 +143,7 @@ class GameMap:
         for e in self._opinion_graph.edges:
             nx.set_edge_attributes(self._opinion_graph, rnd.choice(OPINIONS), "opinion")
 
-    def draw(self, surf: pyg.Surface, db_drwexcl: bool = False, db_drwcent: bool = False, db_drwtopleft: bool = False):
+    def draw(self, surf: pyg.Surface, db_drwexcl: bool = False, db_drwcent: bool = False, db_drwtopleft: bool = False, db_aliastxt: bool = False) -> None:
         if db_drwexcl:
             for o in self.state_objs:
                 pyg.draw.rect(surf, (128,0,0), o.get_rect().scale_by(self._excl_sf))
@@ -151,3 +162,14 @@ class GameMap:
             if db_drwcent:
                 pyg.draw.circle(surf, (255,255,255), o.get_pos(), 4)
                 pyg.draw.circle(surf, (255,0,0), o.get_pos(), 3)
+
+            # TODO: FIX THIS!!! make it properly attach to the bottom-right corner
+            if db_aliastxt:
+                txt_surf = GameMap._db_txt.render(o.alias, True, (255,255,255))
+                bg_surf = pyg.Surface(txt_surf.get_size())
+
+                bg_surf.fill((255,0,0))
+                bg_surf.blit(txt_surf, (0,0))
+
+                d_vec = Vector2(0, 0.5*(o.size.y - txt_surf.get_size()[1]))
+                surf.blit(bg_surf, o.get_pos() + d_vec)
