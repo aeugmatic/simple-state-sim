@@ -170,6 +170,5 @@ class GameMap:
 
                 bg_surf.fill((255,0,0))
                 bg_surf.blit(txt_surf, (0,0))
-
-                d_vec = Vector2(0, 0.5*(o.size.y - txt_surf.get_size()[1]))
-                surf.blit(bg_surf, o.get_pos() + d_vec)
+                
+                surf.blit(bg_surf, Vector2(o.get_rect().bottomright) - Vector2(bg_surf.get_size()))
