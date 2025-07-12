@@ -22,8 +22,7 @@ OPINIONS = [
     "NEUTRAL",
     "NEGATIVE"
 ]
-MIN_LEN = 100
-LINE_EXCL_SF = 1.4 # TODO: Implement as part of the class
+LINE_EXCL_SF = 1.4
 
 pyg.init()
 
@@ -133,15 +132,6 @@ class GameMap:
             lambda e : rnd.choice(OPINIONS),
             "opinion"
         )
-
-        # Create mapping to change graph nodes into GameObjects
-        mapping = {}
-        for i in range( len(self.state_objs) ):
-            mapping[i] = self.state_objs[i]
-        
-        nx.relabel_nodes(self._opinion_graph, mapping)
-        for e in self._opinion_graph.edges:
-            nx.set_edge_attributes(self._opinion_graph, rnd.choice(OPINIONS), "opinion")
 
     def draw(self, surf: pyg.Surface, db_drwexcl: bool = False, db_drwcent: bool = False, db_drwtopleft: bool = False, db_aliastxt: bool = False) -> None:
         if db_drwexcl:

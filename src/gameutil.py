@@ -82,12 +82,13 @@ def perp_dist(a: Vector2, b: Vector2, p: Vector2) -> float:
         return -1
 
 def replace_nodes(node_list: list, graph: nx.Graph, attr_func: Optional[Callable] = None, attr_name: Optional[str] = None) -> None:
+        # 1. Replace each default int node (of a generated graph)
         mapping = {}
         for i in range( len(node_list) ):
             mapping[i] = node_list[i]
         nx.relabel_nodes(graph, mapping, False)
 
-        # Give each edge a single attribute, potentially based on the edge nodes themselves - if attribute function arg is given
+        # 2. Give each edge a single attribute, potentially based on the edge nodes themselves
         if attr_func:
             attr_map = {}
             for e in graph.edges:
