@@ -11,10 +11,10 @@ from gamemap import GameMap
 from pygame.locals import *
 
 # Constants and other
-MIN_RES = (640,480)
+MIN_RES = Vector2(640,480)
 FPS = 60
-S_LIM = 5
-S_SIZE = 50
+S_LIM = 4
+S_SIZE = 65
 EXCL_SF = 2.0
 
 SEED = random.randint(0, 2**32 - 1)
@@ -50,17 +50,13 @@ def rand_pos(res: tuple):
 def main(minres: tuple[int,int], fps: tuple[int,int]):
     min_screen, clk = init_window(minres, "Graph Draw Test")
 
-    gmap = GameMap(SEED, 0.6, S_LIM, Vector2(S_SIZE), minres, EXCL_SF)
-
-    gmap.draw(min_screen, db_drwexcl=True, db_drwcent=True, db_drwtopleft=True)
+    gmap = GameMap(SEED, 0.6, S_LIM, Vector2(S_SIZE), minres, EXCL_SF, db_printsplits=True)
 
     while True:
         handle_events(pyg.event.get(), gmap)
 
         min_screen.fill((0,0,0))
-        gmap.draw(min_screen, db_drwexcl=True, db_drwcent=True, db_drwtopleft=True, db_aliastxt=True)
-
-        display = pyg.Surface((1080, 720))
+        gmap.draw(min_screen, db_drwexcl=False, db_drwcent=False, db_drwtopleft=False, db_aliastxt=True)
 
         pyg.display.update()
         clk.tick(fps)   

@@ -95,9 +95,12 @@ def replace_nodes(node_list: list, graph: nx.Graph, attr_func: Optional[Callable
                 attr_map[e] = attr_func(e)
             nx.set_edge_attributes(graph, attr_map, attr_name)#
 
-def split_link_by_game_obj(graph: nx.Graph, edge: tuple[GameObject, GameObject], node: GameObject) -> None:
+def split_link_by_game_obj(graph: nx.Graph, edge: tuple[GameObject, GameObject], node: GameObject) -> list[list[GameObject]]:
     e1 = (edge[0], node)
     e2 = (node, edge[1])
 
-    graph.remove_edge(edge)
+    graph.remove_edge(edge[0], edge[1])
     graph.add_edges_from([e1,e2])
+
+    # old edge, new edge 1, new edge 2
+    return [edge, e1, e2]
