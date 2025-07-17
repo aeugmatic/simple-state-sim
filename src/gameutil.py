@@ -1,4 +1,3 @@
-import math
 import random as rnd
 import pygame as pyg
 import networkx as nx

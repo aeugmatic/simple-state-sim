@@ -109,8 +109,10 @@ class GameMap:
         obj_quadr_size = self.state_objs[0].size / 2
         min_excl_dist = math.hypot(obj_quadr_size.x, obj_quadr_size.y)
 
+        to_split = []
         db_splits = []
 
+        # Collect nodes before splitting based on them
         for e in self._travel_graph.edges:
             others = self.state_objs.copy()
             others.remove(e[0])
@@ -119,8 +121,11 @@ class GameMap:
             for o in others:
                 pdist = perp_dist(e[0].get_pos(), e[1].get_pos(), o.get_pos())
                 if pdist != -1 and pdist < (min_excl_dist * line_excl_sf):
-                    old, new1, new2 = split_link_by_game_obj(self._travel_graph, e, o)
-                    db_splits.append([old, new1, o, new2])
+                    to_split.append([e, o])
+
+        for old_edge, obj in to_split:
+            old, new1, new2 = split_link_by_game_obj(self._travel_graph, old_edge, obj)
+            db_splits.append([old, new1, obj, new2])
 
         if db_printsplits:
             for old, new1, obj, new2 in db_splits:
