@@ -5,23 +5,18 @@ import random as rnd
 from gameutil import *
 from pygame import Vector2
 from gameobj import GameObject
-from itertools import combinations
 
-# TODO: degree == 0 doesn't guarantee connections - fix this issue (e.g. consider case where
-# map looks like: []--[]   []---[])
-# TODO: improve the for n1, n2 in combinations approach because it seems like it could
-# be quite inefficient for larger maps 
-# TODO: modify the travel graph creation, so that the check for whether an object has at
-# least one link is done within the edge generation loop instead of needing a separate one?
-# TODO: improve the approach to checking if a rect is within line exclusion - potential for 
-# program to get hung up if such an edge doesn't exist / can't be created?
-# TODO: store the edges to be made before hand in the generate states? idk
+# TODO: create a state name "storage" that the program chooses from to give the states
+#       unique names
+# TODO: based on the previous consideration, do the same for other constants, such as the
+#       opinions tuple?
+# TODO: XXX 
 
-OPINIONS = [
+OPINIONS = (
     "POSITIVE",
     "NEUTRAL",
     "NEGATIVE"
-]
+)
 MIN_LEN = 100
 LINE_EXCL_SF = 1.4
 
@@ -49,10 +44,6 @@ class GameMap:
         self.state_objs = []
         self._travel_graph = nx.Graph()
         self._opinion_graph = nx.Graph()
-
-    # Next session TODO:
-    # 2.) edge exclusion
-    # 3.) travellers
 
     def _generate_states(self, no_objs: int, obj_size: Vector2, res: tuple[int,int], excl_sf: float, min_len: float):
         excl_list: list[GameObject] = []

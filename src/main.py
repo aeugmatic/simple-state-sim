@@ -1,7 +1,5 @@
-# 
-# TODO:
-# - Properly figure out reseting the game map, current approach is buggy (test yourself to see the issue, cba writing it here right now)
-# 
+# - FIXME: Properly figure out reseting the game map, current approach is buggy (test yourself to see the issue, cba writing it here right now)
+# - !!!FIXME!!!: clean up the code so it's much neater and cleaner than it may be currently
 
 import sys
 import pygame as pyg
@@ -40,12 +38,6 @@ def handle_events(events: list[pyg.event.Event], game_map: GameMap):
         if e.type == KEYDOWN:
             if e.key == K_SPACE:
                 game_map._generate_states(S_LIM, Vector2(S_SIZE), MIN_RES, EXCL_SF)
-
-def rand_pos(res: tuple):
-    return (
-        random.randint(S_SIZE//2, (res[0]-1) - (S_SIZE // 2)), 
-        random.randint(S_SIZE//2, (res[1]-1) - (S_SIZE // 2))
-    )
 
 def main(minres: tuple[int,int], fps: tuple[int,int]):
     min_screen, clk = init_window(minres, "Graph Draw Test")
